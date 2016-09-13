@@ -1,0 +1,14 @@
+{
+    "name": "elkore/signalmind-rest-client",
+    "description": "REST client for https://files.safemobi.net/rest/v2/Help",
+    "authors": [
+        {
+            "name": "Sergey Razuvalov",
+            "email": "sergey@razuvalov.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "monolog/monolog": "^1.21"
+    }
+}
