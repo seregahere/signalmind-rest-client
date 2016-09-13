@@ -29,76 +29,72 @@ class HandleLoyalty extends AApiClient
         $this->info($member);
         if (is_object($member) && $member->RegistrationSourceCode != 'A' && $member->Phone != 'test phone') :
             $this->info('start foreach');
-        foreach ($this->getLoyaltySites() as $site) :
-
-                $this->info('checking site '.$site->AccountId.' ['.$site->SiteFullDomainName.']');
-        $res = $this->findMember($site->AccountId, $member->Phone);
-        if ($res['found']) {
-            $this->info('FOUND');
-            $this->info($res['member']);
-        } else {
-            $this - info('NOT FOUND, register new...');
-            $member->IgnoreWebHook = true;
-            $res = $this->api->addLoyaltyMember($site->AccountId, $member);
-            $this->info('Result of registration: ');
-            $this->info($res);
-        }
-
-        endforeach;
+		    foreach ($this->getLoyaltySites() as $site) :
+				$this->info('checking site '.$site->AccountId.' ['.$site->SiteFullDomainName.']');
+				$res = $this->findMember($site->AccountId, $member->Phone);
+				if ($res['found']) {
+				    $this->info('FOUND');
+				    $this->info($res['member']);
+				} else {
+				    $this - info('NOT FOUND, register new...');
+				    $member->IgnoreWebHook = true;
+				    $res = $this->api->addLoyaltyMember($site->AccountId, $member);
+				    $this->info('Result of registration: ');
+				    $this->info($res);
+				}
+		    endforeach;
         endif;
     }
 
     public function updateMember($updObj = null)
     {
-        if (is_object($updObj) && is_object($updObj->UpdatedMember) && is_object($updObj->PreviousMemberInfo)) :
+		$this->info('updateMember called');
+        if (is_object($updObj) && is_object($updObj->UpdatedMember) && is_object($updObj->PreviousMemberInfo) && $updObj->PreviousMemberInfo->Phone != 'test phone') :
             $member = $updObj->UpdatedMember;
-        $prevMember = $updObj->PreviousMemberInfo;
-        $regOnly = ($member == $prevMember);
-        $initialID = $prevMember->Id;
-        foreach ($this->getLoyaltySites() as $site) :
-                $this->info('checking site '.$site->AccountId.' ['.$site->SiteFullDomainName.']');
-        $res = $this->findMember($site->AccountId, $prevMember->Phone);
+		    $prevMember = $updObj->PreviousMemberInfo;
+		    $regOnly = ($member == $prevMember);
+		    $initialID = $prevMember->Id;
+		    foreach ($this->getLoyaltySites() as $site) :
+				$this->info('checking site '.$site->AccountId.' ['.$site->SiteFullDomainName.']');
+				$res = $this->findMember($site->AccountId, $prevMember->Phone);
 
-        if ($res['found']) {
-            if ($regOnly) {
-                $this->info('No changes were found, skipped...');
-            } else {
-                if ($initialID != $res['member']->Id) {
-                    $this->info('FOUND');
-                    $this->info($res['member']);
-                    $member->Id = $res['member']->Id;
-                    $member->IgnoreWebHook = true;
-                    $res = $this->api->updateLoyaltyMember($site->AccountId, $member);
-                } else {
-                    $this->info('ID is identical, update not needed');
-                    $this->info($res);
-                }
-            }
-        } else {
-            $this->info('NOT FOUND, register new...');
-//					echo 'NOT FOUND, skipped...',"\n";
-        //			echo 'New Reg Object: ',"\n================\n";
+				if ($res['found']) {
+				    if ($regOnly) {
+				        $this->info('No changes were found, skipped...');
+				    } else {
+				        if ($initialID != $res['member']->Id) {
+				            $this->info('FOUND');
+				            $this->info($res['member']);
+				            $member->Id = $res['member']->Id;
+				            $member->IgnoreWebHook = true;
+				            $res = $this->api->updateLoyaltyMember($site->AccountId, $member);
+				        } else {
+				            $this->info('ID is identical, update not needed');
+				            $this->info($res);
+				        }
+				    }
+				} else {
+				    $this->info('NOT FOUND, register new...');
+					$newMember = new \stdClass();
+				    $newMember->FirstName = $member->FirstName;
+				    $newMember->LastName = $member->LastName;
+				    $newMember->Phone = $member->Phone;
+				    $newMember->Email = $member->Email;
+				    $newMember->RegistrationSourceCode = 'A';
+				    $newMember->RegistrationSourceCodeDescription = 'API';
+				    $newMember->LoyaltyProgramId = $updObj->LoyaltyProgramId;
+				    $newMember->ExternalAccountId = $member->ExternalAccountId;
+				    $newMember->Birthday = $member->Birthday;
+				    $newMember->EventTypeCode = 'S';
+				    $newMember->EventTypeDescription = 'Loyalty program user auto-signup';
+				    $newMember->IgnoreWebHook = true;
+				    $this->info($newMember);
+				    $res = $this->api->addLoyaltyMember($site->AccountId, $newMember);
+				    $this->info('Result of registration:');
+				    $this->info($res);
+				}
 
-                    $newMember = new \stdClass();
-            $newMember->FirstName = $member->FirstName;
-            $newMember->LastName = $member->LastName;
-            $newMember->Phone = $member->Phone;
-            $newMember->Email = $member->Email;
-            $newMember->RegistrationSourceCode = 'A';
-            $newMember->RegistrationSourceCodeDescription = 'API';
-            $newMember->LoyaltyProgramId = $updObj->LoyaltyProgramId;
-            $newMember->ExternalAccountId = $member->ExternalAccountId;
-            $newMember->Birthday = $member->Birthday;
-            $newMember->EventTypeCode = 'S';
-            $newMember->EventTypeDescription = 'Loyalty program user auto-signup';
-            $newMember->IgnoreWebHook = true;
-            $this->info($newMember);
-            $res = $this->api->addLoyaltyMember($site->AccountId, $newMember);
-            $this->info('Result of registration:');
-            $this->info($res);
-        }
-
-        endforeach;
+		    endforeach;
         endif;
     }
 
@@ -119,11 +115,11 @@ class HandleLoyalty extends AApiClient
         //$this->loyaltyAccounts = $this->getLoyaltySites();
         foreach ($this->accounts as $account) {
             //			if ($account->AccountPlanId == $this->AccountWithLoyalty) :
-            if ($this->_isLoyaltySupported($account)) :
-                foreach ($account->Sites as $site) :
+            if ($this->_isLoyaltySupported($account)) {
+                foreach ($account->Sites as $site) {
                     $res[] = $site;
-            endforeach;
-            endif;
+            	}
+            }
         }
 
         return $res;
