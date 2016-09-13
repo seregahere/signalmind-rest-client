@@ -7,8 +7,8 @@
  */
 namespace Elkore\SignalMindRestClient;
 
-class SignalMindApiV2
-{
+class SignalMindApiV2 extends AApiClient {
+
 	public $lastResult;
 
 	protected $apiKey = '';
@@ -17,7 +17,7 @@ class SignalMindApiV2
 	protected $saveTokenCallback;
 	protected $loadTokenCallback;
 	protected $tmpTokenFilename;
-	protected $branchDemo = 845;
+
 	
 	/**
 	 * Class constructor
@@ -33,7 +33,7 @@ class SignalMindApiV2
 	 * @param void $customLoadTokenCallback
 	 * @param void $customSaveTokenCallback
 	 */
-	function __construct($key, &$customLoadTokenCallback = null, &$customSaveTokenCallback = null)
+	public function __construct($key, &$customLoadTokenCallback = null, &$customSaveTokenCallback = null)
 	{
 		if (strlen($key)>0)
 		{
@@ -48,6 +48,10 @@ class SignalMindApiV2
 		$this->saveTokenCallback = ( (isset($customSaveTokenCallback) && is_callable($customSaveTokenCallback)) ? $customSaveTokenCallback : array(&$this, 'saveTokenToFile') );
 
 		$this->getAccessToken(); //load stored access token
+	}
+
+	public function setLogger($logger) {
+		$this->logger = $logger;
 	}
 
 	/**
@@ -92,6 +96,7 @@ class SignalMindApiV2
 		if ($res['success']) {
 			$this->setAccessToken($res['result']->Data->Token);
 		}
+
 		return $res;
 	}
 
@@ -104,24 +109,26 @@ class SignalMindApiV2
 	}
 
 	public function getMemberByPhone($accountID, $phone){
-		echo 'get member by phone, accoundid=',$accountID,', phone=',$phone,"\n";
+		$this->info('getMemberByPhone, accoundid='.$accountID.', phone='.$phone );
 		$res = $this->ApiRequest('/loyaltyprogram/members/'.$accountID.'/phone/'.$phone);
-		var_dump($res);
+		$this->info($res);
 		$obj = null;
 		if ($res['success']) {
 			$obj = $res['result']->Data;
 		}
+
 		return $obj;
 	}
 
 
 	public function getLoyaltyMembers($accountID, $skip=0, $take=500){
-		echo 'get members, accoundid=',$accountID,', skip=',$skip,', take=',$take,"\n";
+		$this->info( 'getLoyaltyMembers, accoundid='.$accountID.', skip='.$skip.', take='.$take );
 		$res = $this->ApiRequest('/loyaltyprogram/members/'.$accountID.'?skip='.$skip.'&take='.$take);
 		$obj = array();
 		if ($res['success']) {
 			$obj = $res['result']->Data;
 		}
+
 		return $obj;
 	}
 
@@ -135,6 +142,7 @@ class SignalMindApiV2
 		{
 			$xmlObj = $res['result']->Data->Items;
 		}
+
 		return $xmlObj;
 	}
 	
@@ -174,6 +182,7 @@ class SignalMindApiV2
 			
 			}
 		}
+
 		return $res;
 	}
 
@@ -257,6 +266,7 @@ class SignalMindApiV2
 					
 			}
 		}
+
 		return $res;
 	}
 

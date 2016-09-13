@@ -4,15 +4,15 @@ namespace Elkore\SignalMindRestClient;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Elkore\SignalmindRestClient\SignalMindApiV2;
+use Elkore\SignalMindRestClient\SignalMindApiV2;
 
-class HandleLoyalty {
+class HandleLoyalty extends AApiClient {
 
 	public $accounts = array();
 	public $loyaltyAccounts = array();
 
 	private $api;
-	private $logger = null;
+
 
 	public function __construct($apiKey = '', $logFile = '') {
 		$this->api = new SignalMindApiV2($apiKey);
@@ -20,6 +20,7 @@ class HandleLoyalty {
 			// create a log channel
 			$this->logger = new Logger('HandleLoyalty');
 			$this->logger->pushHandler(new StreamHandler($logFile, Logger::INFO));
+			$this->api->setLogger( $this->logger );
 		}
 	}
 
@@ -145,17 +146,7 @@ class HandleLoyalty {
 		return $res;
 	}
 
-	private function warning($obj) {
-		if (is_object($this->logger) && method_exists('warning', $this->logger)) $log->warning( $obj );
-	}
 
-	private function error($obj) {
-		if (is_object($this->logger) && method_exists('error', $this->logger)) $log->error( $obj );
-	}
-
-	private function info($obj) {
-		if (is_object($this->logger) && method_exists('info', $this->logger)) $log->info( $obj );
-	}
 
 
 }
