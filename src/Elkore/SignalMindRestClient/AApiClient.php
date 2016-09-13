@@ -8,22 +8,22 @@ abstract class AApiClient
 
     protected function warning($obj)
     {
-        if (is_object($this->logger) && method_exists('warning', $this->logger)) {
-            $log->warning($obj);
+        if (is_object($this->logger) && method_exists($this->logger, 'warning')) {
+            $this-logger->warning($obj);
         }
     }
 
     protected function error($obj)
     {
-        if (is_object($this->logger) && method_exists('error', $this->logger)) {
-            $log->error($obj);
+        if (is_object($this->logger) && method_exists($this->logger, 'error')) {
+            $this-logger->error($obj);
         }
     }
 
     protected function info($obj)
     {
-        if (is_object($this->logger) && method_exists('info', $this->logger)) {
-            $log->info($obj);
+        if (is_object($this->logger) && method_exists($this->logger, 'info')) {
+            $this-logger->info($obj);
         }
     }
 }
