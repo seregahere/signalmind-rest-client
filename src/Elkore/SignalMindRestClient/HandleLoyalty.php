@@ -79,7 +79,7 @@ class HandleLoyalty extends AApiClient
 //					echo 'NOT FOUND, skipped...',"\n";
         //			echo 'New Reg Object: ',"\n================\n";
 
-                    $newMember = new stdClass();
+                    $newMember = new \stdClass();
             $newMember->FirstName = $member->FirstName;
             $newMember->LastName = $member->LastName;
             $newMember->Phone = $member->Phone;
