@@ -13,6 +13,9 @@
 	}
     },
     "minimum-stability": "dev",
+    "repositories": [
+        { "type": "vcs", "url": "https://github.com/seregahere/signalmind-rest-client" }
+    ],
     "require": {
         "monolog/monolog": "^1.21"
     }
