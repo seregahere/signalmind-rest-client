@@ -1,8 +1,11 @@
 <?php
 
-namespace Elkore\SignalmindRestClient;
+namespace Elkore\SignalMindRestClient;
 
-class SignalmindRestClient {
+use Elkore\SignalMindRestClient\HandleLoyalty;
+use Elkore\SignalMindRestClient\SignalMindApiV2;
+
+class SignalMindRestClient {
 
 	private static $instance;
 	private $restclients = array();
@@ -27,7 +30,7 @@ class SignalmindRestClient {
 
     public function getRestClient($apikey = 'invalidkey'){
 		if (!array_key_exists($apikey, $this->restclients)) {
-			$this->restclients[$apikey] =  new \Elkore\SignalmindRestClient\SignalmindApiV2($apikey);
+			$this->restclients[$apikey] =  new SignalMindApiV2($apikey);
 		}
 
 		return $this->restclients[$apikey];
@@ -36,7 +39,7 @@ class SignalmindRestClient {
     public function getLoyaltyClient($apikey = 'invalidkey', $logfile = null){
 		$key = $apikey . '-' . md5($logfile);
 		if (!array_key_exists($key, $this->restclients)) {
-			$this->loyaltyclients[$key] =  new \Elkore\SignalmindRestClient\HandleLoyalty($apikey, $logfile);
+			$this->loyaltyclients[$key] =  new HandleLoyalty($apikey, $logfile);
 		}
 
 		return $this->loyaltyclients[$key];

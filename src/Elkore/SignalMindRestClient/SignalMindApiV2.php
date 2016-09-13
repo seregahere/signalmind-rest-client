@@ -5,9 +5,9 @@
  * Change date: 2013-06-13
  * 
  */
-namespace Elkore\SignalmindRestClient;
+namespace Elkore\SignalMindRestClient;
 
-class SignalmindApiV2
+class SignalMindApiV2
 {
 	public $lastResult;
 
@@ -40,7 +40,7 @@ class SignalmindApiV2
 			$this->apiKey = $key;
 		}
 		//filename to store temporary access token
-		$this->tmpTokenFilename = sys_get_temp_dir().'/resapi.txt';
+		$this->tmpTokenFilename = sys_get_temp_dir().'/resapi-'.md5($this->apiKey).'.txt';
 
 		//set access token load/save callbacks
 
@@ -262,7 +262,7 @@ class SignalmindApiV2
 
 	private function loadTokenFromFile()
 	{
-		return trim(file_get_contents($this->tmpTokenFilename));
+		return file_exists($this->tmpTokenFilename) ? trim(file_get_contents($this->tmpTokenFilename)) : '';
 	}
 
 	private function saveTokenToFile($token)

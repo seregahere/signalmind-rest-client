@@ -1,10 +1,10 @@
 <?php
 
-namespace Elkore\SignalmindRestClient;
+namespace Elkore\SignalMindRestClient;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
+use Elkore\SignalmindRestClient\SignalMindApiV2;
 
 class HandleLoyalty {
 
@@ -15,7 +15,7 @@ class HandleLoyalty {
 	private $logger = null;
 
 	public function __construct($apiKey = '', $logFile = '') {
-		$this->api = new \Elkore\SignalmindRestClient\SignalmindApiV2($apiKey);
+		$this->api = new SignalMindApiV2($apiKey);
 		if (strlen($logFile)) {
 			// create a log channel
 			$this->logger = new Logger('HandleLoyalty');
