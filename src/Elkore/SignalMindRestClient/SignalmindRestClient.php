@@ -4,8 +4,26 @@ namespace Elkore\SignalmindRestClient;
 
 class SignalmindRestClient {
 
+	private static $instance;
 	private $restclients = array();
 	private $loyaltyclients = array();
+
+	public static function getInstance()
+    {
+        if (null === static::$instance) {
+            static::$instance = new static();
+        }
+        
+        return static::$instance;
+    }
+
+	protected function __construct()
+    {
+    }
+
+	private function __clone()
+    {
+    }
 
     public function getRestClient($apikey = 'invalidkey'){
 		if (!array_key_exists($apikey, $this->restclients)) {
