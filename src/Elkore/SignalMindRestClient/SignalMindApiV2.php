@@ -3,7 +3,7 @@
 /**
  * Signalmind API interface.
  *
- * Change date: 2013-06-13
+ * Change date: 2016-09-13
  */
 namespace Elkore\SignalMindRestClient;
 
@@ -143,6 +143,26 @@ class SignalMindApiV2 extends AApiClient
         return $xmlObj;
     }
 
+    public function setLoyaltyPoints($accountID, $transaction)
+    {
+        return $this->ApiRequest('/loyaltyprogram/enterpoints/'.$accountID, 'POST', json_encode($transaction));
+    }
+
+    public function setLoyaltyAction($accountID, $transaction)
+    {
+        return $this->ApiRequest('/loyaltyprogram/enteraction/'.$accountID, 'POST', json_encode($transaction));
+    }
+
+    public function setLoyaltyRedemption($accountID, $transaction)
+    {
+        return $this->ApiRequest('/loyaltyprogram/enterredemption/'.$accountID, 'POST', json_encode($transaction));
+    }
+
+    public function setLoyaltyCorrection($accountID, $transaction)
+    {
+        return $this->ApiRequest('/loyaltyprogram/entercorrection/'.$accountID, 'POST', json_encode($transaction));
+    }
+
     /**
      * Make the Signalmind API request.
      *
@@ -169,13 +189,14 @@ class SignalMindApiV2 extends AApiClient
     {
         $res = $this->_doApiRequest($url, $method, $postBody);
 
+/*
         if ((!$res['success'])) {
             $res = $this->Authentication();
             if ($res['success']) {
                 $res = $this->_doApiRequest($url, $method, $postBody);
             }
         }
-
+*/
         return $res;
     }
 
@@ -205,15 +226,15 @@ class SignalMindApiV2 extends AApiClient
         }
         curl_setopt($ch, CURLOPT_URL, $this->apiURL.$url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type:text/json',
+        'Content-Type: application/json',
         'Authentication: '.$this->accessToken,
         //'Content-Length: ' .strlen($postBody)
         )
         );
 
-        if (defined('RESAPI_DEBUG') && RESAPI_DEBUG) {
-            curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        }
+    //    if (defined('RESAPI_DEBUG') && RESAPI_DEBUG) {
+//            curl_setopt($ch, CURLOPT_VERBOSE, 1);
+   //     }
 
         curl_setopt($ch, CURLOPT_FAILONERROR, false);
     //	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
