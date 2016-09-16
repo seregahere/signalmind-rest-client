@@ -143,6 +143,11 @@ class SignalMindApiV2 extends AApiClient
         return $xmlObj;
     }
 
+	public function getAccount($accountId)
+    {
+        return $this->ApiRequest('/account/'.$accountId);
+    }
+
     public function setLoyaltyPoints($accountID, $transaction)
     {
         return $this->ApiRequest('/loyaltyprogram/enterpoints/'.$accountID, 'POST', json_encode($transaction));

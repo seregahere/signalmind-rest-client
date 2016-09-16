@@ -50,7 +50,9 @@ class HandleLoyalty extends AApiClient
     {
         $this->info('copyUsers called');
         $this->info($transaction);
-
+		$account = $this->api->getAccount($transaction->Id);
+		$this->info('  account:');
+		$this->info($account);
        
     }
 
