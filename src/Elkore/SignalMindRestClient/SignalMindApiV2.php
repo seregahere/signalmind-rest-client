@@ -145,7 +145,7 @@ class SignalMindApiV2 extends AApiClient
 
 	public function getAccount($accountId)
     {
-        return $this->ApiRequest('/account/'.$accountId);
+        return $this->ApiRequest('/accounts/'.$accountId);
     }
 
     public function setLoyaltyPoints($accountID, $transaction)
@@ -194,14 +194,14 @@ class SignalMindApiV2 extends AApiClient
     {
         $res = $this->_doApiRequest($url, $method, $postBody);
 
-/*
+
         if ((!$res['success'])) {
             $res = $this->Authentication();
             if ($res['success']) {
                 $res = $this->_doApiRequest($url, $method, $postBody);
             }
         }
-*/
+
         return $res;
     }
 
