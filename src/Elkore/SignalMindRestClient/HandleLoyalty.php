@@ -46,6 +46,15 @@ class HandleLoyalty extends AApiClient
         }
     }
 
+	public function copyUsers($transaction = null)
+    {
+        $this->info('copyUsers called');
+        $this->info($transaction);
+
+       
+    }
+
+
     public function updatePoints($transaction = null)
     {
         $this->info('updatePoints called');
