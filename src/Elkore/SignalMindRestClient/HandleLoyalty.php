@@ -54,7 +54,7 @@ class HandleLoyalty extends AApiClient
 		$account = $this->api->getAccount($transaction->Id);
 		$this->info('account:');
 		$this->info($account);
-		if ($account->IsLoyaltyProgramAccount) 
+		if ($account->IsLoyaltyProgramAccount && is_array($account->Sites) && count($account->Sites)) 
 		{
 			$membersSource = array();
 			$maxMembersCnt = 0;
@@ -74,6 +74,26 @@ class HandleLoyalty extends AApiClient
 				}
 			}
 			//do registration
+			foreach ($account->Sites as $site)
+			{
+				foreach ($membersSource as $member)
+				{
+//					if (!array_key_exists($member->Phone, $allMembers[$site->AccountId]))
+//					{
+						$this->info('Register new member ' . $member->Phone . ' for site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
+                    	$member->IgnoreWebHook = true;
+                    	$res = $this->api->addLoyaltyMember($site->AccountId, $member);
+                    	$this->info('Result of registration: ');
+                    	$this->info($res);
+//					}
+//					else
+//					{
+//						$this->info('Member ' . $member->Phone . ' is already exists in site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
+//					}
+				}
+			}
+			/*
+			//do registration
 			foreach ($this->getLoyaltySites() as $site)
 			{
 				foreach ($membersSource as $member)
@@ -92,10 +112,11 @@ class HandleLoyalty extends AApiClient
 					}
 				}
 			}
+			*/
 		} 
 		else
 		{
-			$this->info('Loyalty program is not supported for this account');
+			$this->info('Loyalty program is not supported for this account or does not contain sites');
 		}
        
     }
