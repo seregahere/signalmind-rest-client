@@ -11,6 +11,7 @@ class HandleLoyalty extends AApiClient
     public $loyaltyAccounts = array();
 
     private $api;
+	private $cache = array();
 
     public function __construct($apiKey = '', $logFile = '')
     {
@@ -51,8 +52,51 @@ class HandleLoyalty extends AApiClient
         $this->info('copyUsers called');
         $this->info($transaction);
 		$account = $this->api->getAccount($transaction->Id);
-		$this->info('  account:');
+		$this->info('account:');
 		$this->info($account);
+		if ($account->IsLoyaltyProgramAccount) 
+		{
+			$membersSource = array();
+			$maxMembersCnt = 0;
+			$allMembers = array();
+			foreach ($this->getLoyaltySites() as $site)
+			{
+				$allMembers[$site->AccountId] = array();
+				$members = $this->api->getLoyaltyMembers($site->AccountId);
+				if ($maxMembersCnt < count($members))
+				{
+					$maxMembersCnt = count($members);
+					$membersSource = $members;
+				}
+				foreach ($members as $member)
+				{
+					$allMembers[$site->AccountId][$member->Phone] = 1;
+				}
+			}
+			//do registration
+			foreach ($this->getLoyaltySites() as $site)
+			{
+				foreach ($membersSource as $member)
+				{
+					if (!array_key_exists($member->Phone, $allMembers[$site->AccountId]))
+					{
+						$this->info('Register new member ' . $member->Phone . ' for site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
+                    	$member->IgnoreWebHook = true;
+                    	$res = $this->api->addLoyaltyMember($site->AccountId, $member);
+                    	$this->info('Result of registration: ');
+                    	$this->info($res);
+					}
+					else
+					{
+						$this->info('Member ' . $member->Phone . ' is already exists in site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
+					}
+				}
+			}
+		} 
+		else
+		{
+			$this->info('Loyalty program is not supported for this account');
+		}
        
     }
 
@@ -155,19 +199,20 @@ class HandleLoyalty extends AApiClient
 
     public function getLoyaltySites()
     {
-        $res = array();
-        $this->accounts = $this->api->getAccounts();
-        //$this->loyaltyAccounts = $this->getLoyaltySites();
-        foreach ($this->accounts as $account) {
-            //			if ($account->AccountPlanId == $this->AccountWithLoyalty) :
-            if ($this->_isLoyaltySupported($account)) {
-                foreach ($account->Sites as $site) {
-                    $res[] = $site;
-                }
-            }
-        }
+		if (!array_key_exists('getLoyaltySites', $this->cache)) {
+		    $res = array();
+		    $accounts = $this->api->getAccounts();
+		    foreach ($accounts as $account) {
+		        if ($this->_isLoyaltySupported($account)) {
+		            foreach ($account->Sites as $site) {
+		                $res[] = $site;
+		            }
+		        }
+		    }
+			$this->cache['getLoyaltySites'] = $res;
+		}
 
-        return $res;
+        return $this->cache['getLoyaltySites'];
     }
 
     public function findMember($accountID, $phone)

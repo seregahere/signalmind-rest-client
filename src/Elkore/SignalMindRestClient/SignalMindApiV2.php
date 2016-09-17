@@ -119,19 +119,49 @@ class SignalMindApiV2 extends AApiClient
         return $obj;
     }
 
-    public function getLoyaltyMembers($accountID, $skip = 0, $take = 500)
+   	public function getLoyaltyMembers($accountId)
+	{
+		return $this->getCollectionByPath('/loyaltyprogram/members/' . $accountId);
+	}
+
+	public function getAccounts()
+	{
+		return $this->getCollectionByPath('/accounts');
+	}
+
+    public function getCollectionByPath($path)
     {
-        $this->info('getLoyaltyMembers, accoundid='.$accountID.', skip='.$skip.', take='.$take);
-        $res = $this->ApiRequest('/loyaltyprogram/members/'.$accountID.'?skip='.$skip.'&take='.$take);
-        $obj = array();
+		$skip=0;
+		$take = 500;
+		$result = array();
+        $res = $this->ApiRequest($path . '?skip='.$skip.'&take='.$take);
+        $this->lastResult = $res;
         if ($res['success']) {
-            $obj = $res['result']->Data;
+            $result = $res['result']->Data->Items;
+			$allCount = $res['result']->Data->AllCount;
+			$fatalExit = false;
+			while (($allCount-1) > count($result) && !$fatalExit) {
+				$skip = $skip + $take;
+				$res = $this->ApiRequest($path . '?skip='.$skip.'&take='.$take);
+				if ($res['success']) 
+				{
+					foreach ($res['result']->Data->Items as $item) 
+					{
+						$result[] = $item;
+					}
+				} 
+				else
+				{
+					$fatalExit = true;
+				}
+			}
         }
 
-        return $obj;
+        return $result;
     }
 
-    public function getAccounts($skip = 0, $take = 500)
+	
+    public function OLDgetAccounts($skip = 0, $take = 500)
     {
         $xmlObj = array();
         $res = $this->ApiRequest('/accounts?skip='.$skip.'&take='.$take);
@@ -143,9 +173,12 @@ class SignalMindApiV2 extends AApiClient
         return $xmlObj;
     }
 
+
 	public function getAccount($accountId)
     {
-        return $this->ApiRequest('/accounts/'.$accountId);
+        $res = $this->ApiRequest('/accounts/'.$accountId);
+
+		return $res['success'] ? $res['result']->Data : null;
     }
 
     public function setLoyaltyPoints($accountID, $transaction)
