@@ -85,10 +85,10 @@ class HandleLoyalty extends AApiClient
                     	$this->info($res);
 
 						//fix loyalty counts
-						if ($member->PointBalance > 0)
+						if ($res['success'] && $member->PointBalance > 0)
 						{
 				            $request = array(
-				                'MemberId' => $member->Id,
+				                'MemberId' => $res['result']->Data->Id,
 				                'IgnoreWebHook' => true,
 				                'Points' => $member->PointBalance,
 				            );
