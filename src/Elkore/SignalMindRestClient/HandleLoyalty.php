@@ -73,27 +73,31 @@ class HandleLoyalty extends AApiClient
 					$allMembers[$site->AccountId][$member->Phone] = 1;
 				}
 			}
-			//do registration
+			//do registration (create users only on newly created site)
 			foreach ($account->Sites as $site)
 			{
 				foreach ($membersSource as $member)
 				{
-//					if (!array_key_exists($member->Phone, $allMembers[$site->AccountId]))
-//					{
 						$this->info('Register new member ' . $member->Phone . ' for site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
                     	$member->IgnoreWebHook = true;
                     	$res = $this->api->addLoyaltyMember($site->AccountId, $member);
                     	$this->info('Result of registration: ');
                     	$this->info($res);
-//					}
-//					else
-//					{
-//						$this->info('Member ' . $member->Phone . ' is already exists in site accountid ' . $site->AccountId . ' fulldomainname=' . $site->SiteFullDomainName);
-//					}
+
+						//fix loyalty counts
+		                $request = array(
+		                    'MemberId' => $member->Id,
+		                    'IgnoreWebHook' => true,
+		                    'Points' => $member->Points,
+		                );
+		                $this->info('update points balance, Request: '.json_encode($request));
+		                $res = $this->api->setLoyaltyCorrection($site->AccountId, $request);
+		                $this->info('Result of points balance correction: '.json_encode($res));
+						
 				}
 			}
 			/*
-			//do registration
+			//do registration (create users on all sites!)
 			foreach ($this->getLoyaltySites() as $site)
 			{
 				foreach ($membersSource as $member)
