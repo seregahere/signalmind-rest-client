@@ -88,7 +88,7 @@ class HandleLoyalty extends AApiClient
 		                $request = array(
 		                    'MemberId' => $member->Id,
 		                    'IgnoreWebHook' => true,
-		                    'Points' => $member->Points,
+		                    'Points' => $member->PointBalance,
 		                );
 		                $this->info('update points balance, Request: '.json_encode($request));
 		                $res = $this->api->setLoyaltyCorrection($site->AccountId, $request);
