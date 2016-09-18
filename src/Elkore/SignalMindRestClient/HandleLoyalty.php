@@ -85,14 +85,17 @@ class HandleLoyalty extends AApiClient
                     	$this->info($res);
 
 						//fix loyalty counts
-		                $request = array(
-		                    'MemberId' => $member->Id,
-		                    'IgnoreWebHook' => true,
-		                    'Points' => $member->PointBalance,
-		                );
-		                $this->info('update points balance, Request: '.json_encode($request));
-		                $res = $this->api->setLoyaltyCorrection($site->AccountId, $request);
-		                $this->info('Result of points balance correction: '.json_encode($res));
+						if ($member->PointBalance > 0)
+						{
+				            $request = array(
+				                'MemberId' => $member->Id,
+				                'IgnoreWebHook' => true,
+				                'Points' => $member->PointBalance,
+				            );
+				            $this->info('update points balance, Request: '.json_encode($request));
+				            $res = $this->api->setLoyaltyCorrection($site->AccountId, $request);
+				            $this->info('Result of points balance correction: '.json_encode($res));
+						}
 						
 				}
 			}
