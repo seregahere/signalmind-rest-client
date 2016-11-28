@@ -12,7 +12,7 @@ class SignalMindApiV2 extends AApiClient
     public $lastResult;
 
     protected $apiKey = '';
-    protected $apiURL = 'https://files.safemobi.net/rest/v2'; /* 'https://files.safemobi.net/rest/v1'; */
+    protected $apiURL = 'https://files.mobilebuilder.net/rest/v2'; //'https://files.safemobi.net/rest/v2'; /* 'https://files.safemobi.net/rest/v1'; */
     protected $accessToken = '';
     protected $saveTokenCallback;
     protected $loadTokenCallback;
